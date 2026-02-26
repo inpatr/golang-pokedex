@@ -1,3 +1,4 @@
 # golang-pokedex
 
-project for practicing web dev basics in go
+a REPL project for practicing web dev basics in go  
+*to get pokemon from the CLI* 
