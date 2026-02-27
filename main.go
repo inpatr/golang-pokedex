@@ -2,8 +2,31 @@ package main
 
 import (
 	"fmt"
+	"bufio"
+	"os"
+	"github.com/inpatr/golang-pokedex/repl"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		fmt.Printf("Pokedex > ")
+		var input string
+		for scanner.Scan() {
+			input = scanner.Text()
+			cleanedInput := repl.CleanInput(input)
+			command, ok := repl.CommandRegistry[cleanedInput[0]] 
+			if !ok {
+				fmt.Printf("Unknown command")
+			} else {
+				err := command.Callback()
+					if err != nil {
+						fmt.Printf("%v", err)
+					}
+			}
+			break
+		}
+		continue
+	}
 }
