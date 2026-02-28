@@ -20,7 +20,8 @@ func main() {
 			if !ok {
 				fmt.Printf("Unknown command")
 			} else {
-				err := command.Callback()
+				config := &repl.Config{}
+				err := command.Callback(config)
 					if err != nil {
 						fmt.Printf("%v", err)
 					}
