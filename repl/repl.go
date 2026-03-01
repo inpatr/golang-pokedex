@@ -11,6 +11,7 @@ import (
 type Config struct {
 	next	*string `json:"next"`
 	previous	*string `json:"previous"`
+	GoBack	*bool
 }
 
 type cliClommand struct {
@@ -38,6 +39,11 @@ func init() {
 			Description:	"Displays next 20 locations on each call",
 			Callback: CommandMap,
 		},
+		"mapb": {
+			Name:	"mapb",
+			Description:	"Displays previous 20 locations on each call",
+			Callback: CommandMap,
+		},
 	}
 }
 
@@ -61,10 +67,19 @@ func CommandHelp(conf *Config) error {
 
 func CommandMap(conf *Config) error {
 	var url string
-	if conf.next != nil && len(*conf.next) > 0 {
-		url = *conf.next
+	if conf.GoBack != nil && !*conf.GoBack {
+		if conf.next != nil && len(*conf.next) > 0 {
+			url = *conf.next
+		} else {
+			url = "https://pokeapi.co/api/v2/location-area/"
+		}
 	} else {
-		url = "https://pokeapi.co/api/v2/location-area/"
+		if conf.previous != nil && len(*conf.previous) > 0 {
+			url = *conf.previous
+		} else {
+			fmt.Println("you're on the first page")
+			return nil
+		}
 	}
 
 	res, err := requests.GetLocationAreas(url)
@@ -72,12 +87,8 @@ func CommandMap(conf *Config) error {
 		return err
 	}
 
-	if res.Next != nil {
-		conf.next = res.Next
-	}
-	if res.Previous != nil {
-		conf.previous = res.Previous
-	}
+	conf.next = res.Next
+	conf.previous = res.Previous
 	
 	var locationAreaList []string
 
